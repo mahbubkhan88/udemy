@@ -20,6 +20,65 @@ class Admin extends Controller
 		$this->view('admin/dashboard',$data);
 	}
 
+	public function courses($action = null, $id = null)
+	{
+
+		if(!Auth::logged_in())
+		{
+			message('please login to view the admin section');
+			redirect('login');
+		}
+
+		$course = new Course();
+		$user_id = Auth::getId();
+		$data = [];
+		$data['action'] = $action;
+		$data['id'] = $id;
+
+		if($action == 'add')
+		{
+			$category = new Category();
+
+			$data['categories'] = $category->findAll('asc');
+
+			if($_SERVER['REQUEST_METHOD'] == "POST")
+			{
+				if($course->validate($_POST))
+				{					
+					$_POST['date'] = date("Y-m-d H:i:s");
+					$_POST['user_id'] = $user_id;
+					$_POST['price_id'] = 1;
+
+					$course->insert($_POST);
+
+					$row = $course->first(['user_id'=>$user_id,'published'=>0]);
+					message("Your Course was successfuly created");
+
+					if($row){
+						redirect('admin/courses/edit/'.$row->id);
+					}else{
+						redirect('admin/courses');
+					}
+				}
+
+				$data['errors'] = $course->errors;
+			}
+		}
+		elseif ($action == 'edit') {
+
+			//Get course information
+			$data['row'] = $course->first(['user_id'=>$user_id, 'id'=>$id]);
+			
+		} else {
+
+			//Course view
+			$data['rows'] = $course->where(['user_id'=>$user_id]);
+		}
+
+		$this->view('admin/courses',$data);
+	}
+
+
 	public function profile($id = null)
 	{
 
@@ -36,7 +95,7 @@ class Admin extends Controller
 
 		if($_SERVER['REQUEST_METHOD'] == "POST" && $row)
 		{
-		
+
 			$folder = "uploads/images/";
 			if(!file_exists($folder))
 			{
@@ -44,9 +103,9 @@ class Admin extends Controller
 				file_put_contents($folder."index.php", "<?php //silence");
 				file_put_contents("uploads/index.php", "<?php //silence");
 			}
- 
- 			if($user->edit_validate($_POST,$id))
- 			{
+
+			if($user->edit_validate($_POST,$id))
+			{
 
 				$allowed = ['image/jpeg','image/png'];
 
@@ -79,7 +138,7 @@ class Admin extends Controller
 
 				//message("Profile saved successfully");
 				//redirect('admin/profile/'.$id);
- 			}
+			}
 
 			if(empty($user->errors)){
 				$arr['message'] = "Profile saved successfully";
@@ -90,7 +149,7 @@ class Admin extends Controller
 
 			echo json_encode($arr);
 
- 			die;
+			die;
 		}
 
 		$data['title'] = "Profile";

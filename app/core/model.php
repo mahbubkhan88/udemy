@@ -61,22 +61,24 @@ class Model extends Database
 
 	}
 
-	public function where($data)
+	public function findAll($order = 'desc')
 	{
 
-		$keys = array_keys($data);
-
-		$query = "select * from ".$this->table." where ";
-
-		foreach ($keys as $key) {
-			$query .= $key . "=:" . $key . " && ";
-		}
+		$query = "select * from ".$this->table." order by id $order ";
  
- 		$query = trim($query,"&& ");
-		$res = $this->query($query,$data);
+		$res = $this->query($query);
 
 		if(is_array($res))
 		{
+			//run afterSelect functions
+			if(property_exists($this, 'afterSelect'))
+			{
+				foreach ($this->afterSelect as $func) {
+					
+					$res = $this->$func($res);
+				}
+			}
+
 			return $res;
 		}
 
@@ -84,7 +86,7 @@ class Model extends Database
 
 	}
 
-	public function first($data)
+	public function where($data, $order = 'desc')
 	{
 
 		$keys = array_keys($data);
@@ -96,19 +98,60 @@ class Model extends Database
 		}
  
  		$query = trim($query,"&& ");
- 		$query .= " order by id desc limit 1";
-
+ 		$query .= " order by id $order ";
 		$res = $this->query($query,$data);
 
 		if(is_array($res))
 		{
-			return $res[0];
+
+			//run afterSelect functions
+			if(property_exists($this, 'afterSelect'))
+			{
+				foreach ($this->afterSelect as $func) {
+					
+					$res = $this->$func($res);
+				}
+			}
+
+			return $res;
 		}
 
 		return false;
 
 	}
 
-	
+	public function first($data, $order = 'desc')
+	{
 
+		$keys = array_keys($data);
+
+		$query = "select * from ".$this->table." where ";
+
+		foreach ($keys as $key) {
+			$query .= $key . "=:" . $key . " && ";
+		}
+ 
+ 		$query = trim($query,"&& ");
+ 		$query .= " order by id $order limit 1";
+
+		$res = $this->query($query,$data);
+
+		if(is_array($res))
+		{
+
+			//run afterSelect functions
+			if(property_exists($this, 'afterSelect'))
+			{
+				foreach ($this->afterSelect as $func) {
+					
+					$res = $this->$func($res);
+				}
+			}
+
+			return $res[0];
+		}
+
+		return false;
+
+	}
 }

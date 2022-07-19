@@ -8,6 +8,11 @@ function show($stuff)
 	echo "</pre>";
 }
 
+function get_date($date)
+{
+	return date("jS M, Y",strtotime($date));
+}
+
 
 function set_value($key, $default = '')
 {
@@ -20,6 +25,28 @@ function set_value($key, $default = '')
 	if(!empty($default))
 	{
 		return $default;
+	}
+
+	return '';
+}
+
+function set_select($key, $value, $default = '')
+{
+
+
+	if(!empty($_POST[$key]))
+	{
+		if($value == $_POST[$key])
+		{
+			return ' selected ';
+		}
+	}else
+	if(!empty($default))
+	{
+		if($default == $value)
+		{
+			return ' selected ';
+		}
 	}
 
 	return '';

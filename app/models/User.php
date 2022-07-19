@@ -10,6 +10,7 @@ class User extends Model
 	protected $table = "users";
 
 	protected $allowedColumns = [
+		
 		'firstname',
 		'lastname',
 		'email',
@@ -28,6 +29,7 @@ class User extends Model
 		'twitter_link',
 		'linkedin_link',
 		'date',
+		
 	];
 
 	public function validate($data)
