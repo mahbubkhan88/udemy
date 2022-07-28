@@ -68,6 +68,20 @@ class Admin extends Controller
 
 			//Get course information
 			$data['row'] = $course->first(['user_id'=>$user_id, 'id'=>$id]);
+
+			if($_SERVER['REQUEST_METHOD'] == "POST")
+			{
+				if(!empty($_POST['data_type']) && $_POST['data_type'] == "read")
+				{
+					if($_POST['tab_name'] == "course-landing-page")
+					{
+						//include "../app/views/course-edit-tabs/course-landing-page.view.php";
+						include views_path("course-edit-tabs/course-landing-page");
+					}
+				}
+
+				die;
+			}
 			
 		} else {
 

@@ -1,17 +1,60 @@
 <?php $this->view('admin/admin-header',$data) ?>
 
+<style>
+  .tabs-holder{
+    display: flex;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    justify-content: center;
+    text-align: center;
+    flex-wrap: wrap;
+  }
 
+  .my-tab{
+    flex: 1;
+    border-bottom: solid 2px #ccc;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    cursor: pointer;
+    user-select: none;
+    min-width: 200px;
+  }
+
+  .my-tab:hover{
+    color: #4154f1;
+  }
+
+  .active-tab{
+    color: #4154f1;
+    border-bottom: solid 2px #4154f1;
+  }
+
+  .hide{
+    display: none;
+  }
+
+  .loader{
+    position: relative;
+    width: 200px;
+    height: 200px;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%);
+    opacity: 0.3;
+  }
+
+</style>
 
 <?php if($action == 'add'):?>
 
-  <div class="card col-md-10 mx-auto">
+  <div class="card col-md-5 mx-auto">
     <div class="card-body">
       <h5 class="card-title">New Course</h5>
 
       <!-- No Labels Form -->
-      <form method="POST" class="row g-3">
-        
-        <div class="col-md-4">
+      <form method="post" class="row g-3">
+
+        <div class="col-md-12">
           <input value="<?=set_value('title')?>" name="title" type="text" class="form-control <?=!empty($errors['title']) ? 'border-danger':'';?>" placeholder="Course title">
 
           <?php if(!empty($errors['title'])):?>
@@ -20,18 +63,19 @@
 
         </div>
 
-        <div class="col-md-4">
-          <input value="<?=set_value('primary_subject')?>" name="primary_subject" type="text" class="form-control <?=!empty($errors['primary_subject']) ? 'border-danger':'';?>" placeholder="Primary subject">
+        <div class="col-md-12">
+          <input value="<?=set_value('primary_subject')?>" name="primary_subject" type="text" class="form-control <?=!empty($errors['primary_subject']) ? 'border-danger':'';?>" placeholder="Primary subject e.g Photography or Vlogging">
 
           <?php if(!empty($errors['primary_subject'])):?>
             <small class="text-danger"><?=$errors['primary_subject']?></small>
           <?php endif;?>
 
         </div>
- 
-        <div class="col-md-4">
+
+
+        <div class="col-md-12">
           <select name="category_id" id="inputState" class="form-select <?=!empty($errors['category_id']) ? 'border-danger':'';?>">
-            
+
             <option value="" selected="">Course Category...</option>
             <?php if(!empty($categories)):?>
               <?php foreach($categories as $cat):?>
@@ -46,7 +90,7 @@
           <?php endif;?>
 
         </div>
-    
+
         <div class="text-center">
           <button type="submit" class="btn btn-primary">Save</button>
 
@@ -61,92 +105,45 @@
 
 <?php elseif($action == 'edit'):?>
 
-  <div col-md-8>
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Edit Course</h5>
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Edit Course</h5>
 
-        <?php if(!empty($row)):?>
+      <?php if(!empty($row)):?>
 
-          <div class="float-end">
+        <div class="float-end">
           <button class="js-save-button btn btn-success disabled">Save</button>
           <a href="<?=ROOT?>/admin/courses">
             <button class="btn btn-primary">Back</button>
           </a>
         </div>
-
-        <ul class="nav nav-tabs nav-tabs-bordered d-flex" id="borderedTabJustified" role="tablist">
-          <li class="nav-item flex-fill" role="presentation">
-            <button onclick="set_tab(this.getAttribute('data-bs-target'))" class="nav-link w-100 active" id="intended-learners-tab" data-bs-toggle="tab" data-bs-target="#intended-learners" type="button" role="tab" aria-controls="intended-learners" aria-selected="true">Intended Learners</button>
-          </li>
-          <li class="nav-item flex-fill" role="presentation">
-            <button onclick="set_tab(this.getAttribute('data-bs-target'))" class="nav-link w-100" id="curriculum-tab" data-bs-toggle="tab" data-bs-target="#curriculum" type="button" role="tab" aria-controls="curriculum" aria-selected="false">Curriculum</button>
-          </li>
-          <li class="nav-item flex-fill" role="presentation">
-            <button onclick="set_tab(this.getAttribute('data-bs-target'))" class="nav-link w-100" id="course-landing-tab" data-bs-toggle="tab" data-bs-target="#course-landing-page" type="button" role="tab" aria-controls="course-landing-page" aria-selected="false">Course Landing Page</button>
-          </li>
-          <li class="nav-item flex-fill" role="presentation">
-            <button onclick="set_tab(this.getAttribute('data-bs-target'))" class="nav-link w-100" id="promotions-tab" data-bs-toggle="tab" data-bs-target="#promotions" type="button" role="tab" aria-controls="promotions" aria-selected="false">Promotions</button>
-          </li>
-          <li class="nav-item flex-fill" role="presentation">
-            <button onclick="set_tab(this.getAttribute('data-bs-target'))" class="nav-link w-100" id="course-messages-tab" data-bs-toggle="tab" data-bs-target="#course-messages" type="button" role="tab" aria-controls="course-messages" aria-selected="false">Course Messages</button>
-          </li>
-        </ul>
         
-        <div oninput="something_change(event)" class="tab-content pt-2" id="borderedTabJustifiedContent">
-          
-          <div class="tab-pane fade show active" id="intended-learners" role="tabpanel" aria-labelledby="intended-learners-tab">
-            
-            <input type="" name="">
+        <h5 class=""><?=esc($row->title)?></h5>
 
-            <br>
 
-            Intended Learners: Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Tempora libero non est unde veniam est qui dolor.
-          </div>
-
-          <div class="tab-pane fade" id="curriculum" role="tabpanel" aria-labelledby="curriculum-tab">
-            
-            <input type="" name="">
-
-            <br>
-
-            Curriculum: Nesciunt totam et. Consequuntur magnam aliquid eos nulla dolor iure eos quia. Accusantium distinctio omnis et atque fugiat. Itaque doloremque aliquid sint quasi quia distinctio similique.
-          </div>
-
-          <div class="tab-pane fade" id="course-landing-page" role="tabpanel" aria-labelledby="course-landing-tab">
-            
-            <input type="" name="">
-
-            <br>
-
-            Course Landing Page: Saepe animi et soluta ad odit soluta sunt. Nihil quos omnis animi debitis cumque. Accusantium quibusdam perspiciatis qui qui omnis magnam.
-          </div>
-
-          <div class="tab-pane fade" id="promotions" role="tabpanel" aria-labelledby="promotions-tab">
-            
-            <input type="" name="">
-
-            <br>
-
-            Promotions: Saepe animi et soluta ad odit soluta sunt. Nihil quos omnis animi debitis cumque. Accusantium quibusdam perspiciatis qui qui omnis magnam.
-          </div>
-
-          <div class="tab-pane fade" id="course-messages" role="tabpanel" aria-labelledby="course-messages-tab">
-            
-            <input type="" name="">
-
-            <br>
-
-            Course Messages: Saepe animi et soluta ad odit soluta sunt. Nihil quos omnis animi debitis cumque. Accusantium quibusdam perspiciatis qui qui omnis magnam.
-          </div>
-
+        <!-- Tabs -->
+        <br>
+        <div class="tabs-holder">
+          <div onclick="set_tab(this.id,this)" id="intended-learners" class="my-tab active-tab">Intended Learners</div>
+          <div onclick="set_tab(this.id,this)" id="curriculum" class="my-tab">Curriculum</div>
+          <div onclick="set_tab(this.id,this)" id="course-landing-page" class="my-tab">Course Landing Page</div>
+          <div onclick="set_tab(this.id,this)" id="promotions" class="my-tab">Promotions</div>
+          <div onclick="set_tab(this.id,this)" id="course-messages" class="my-tab">Course Messages</div>
         </div>
+        <!-- End Tabs -->
 
-        <?php else:?>
-          <div>That course was not found!</div>
-        <?php endif;?>
+        <!-- div tabs -->
+        <div oninput="something_changed(event)">
+          <div id="tabs-content">
+            
+          </div>
+        </div>
+        <!-- end div tabs -->
 
-      </div>
+      <?php else:?>
+        <div>That course was not found!</div>
+      <?php endif;?>
+
     </div>
   </div>
 
@@ -179,9 +176,10 @@
 
         <?php if(!empty($rows)):?>
           <tbody>
+
             <?php foreach($rows as $row):?>
               <tr>
-                <th scope="row"><?=($row->id)?></th>
+                <th scope="row"><?=$row->id?></th>
                 <td><?=esc($row->title)?></td>
                 <td><?=esc($row->user_row->name ?? 'Unknown')?></td>
                 <td><?=esc($row->category_row->category ?? 'Unknown')?></td>
@@ -189,22 +187,21 @@
                 <td><?=esc($row->primary_subject)?></td>
                 <td><?=get_date($row->date)?></td>
                 <td>
-
                   <a href="<?=ROOT?>/admin/courses/edit/<?=$row->id?>">
-                    <i class="bi bi-pencil-square"></i>
+                    <i class="bi bi-pencil-square"></i> 
                   </a>
-
                   <a href="<?=ROOT?>/admin/courses/delete/<?=$row->id?>">
                     <i class="bi bi-trash-fill text-danger"></i>
                   </a>
-                
                 </td>
               </tr>
             <?php endforeach;?>
+
           </tbody>
         <?php else:?>
-          <tr><td colspan="10">No data found!</td></tr>
+          <tr><td colspan="10">No records found!</td></tr>
         <?php endif;?>
+
       </table>
       <!-- End Table with stripped rows -->
 
@@ -213,47 +210,90 @@
 
 <?php endif;?>
 
-
 <script>
-  
-  var tab = sessionStorage.getItem("tab") ? sessionStorage.getItem("tab"): "#intended-learners";
+
+  var tab = sessionStorage.getItem("tab") ? sessionStorage.getItem("tab"): "intended-learners";
   var dirty = false;
 
   function show_tab(tab_name)
   {
-    const someTabTriggerEl = document.querySelector(tab_name +"-tab");
-    const tab = new bootstrap.Tab(someTabTriggerEl);
 
-    tab.show();
+    var contentDiv = document.querySelector("#tabs-content");
+    show_loader(contentDiv);
+
+    // change the active tab
+    var div = document.querySelector("#"+tab_name);
+    var children = div.parentNode.children;
+    
+    for (var i = 0; i < children.length; i++) {
+      children[i].classList.remove("active-tab");
+    }
+
+    div.classList.add("active-tab");
+
+    var data = {};
+    data.tab_name = tab;
+    data.data_type = "read";
+    send_data(data);
+
     disable_save_button(false);
+
+  }
+
+  function send_data(obj)
+  {
+
+    var myform = new FormData();
+    for(key in obj){
+      myform.append(key,obj[key]); 
+    }
+
+    var ajax = new XMLHttpRequest();
+
+    ajax.addEventListener('readystatechange',function(){
+
+      if(ajax.readyState == 4){
+
+        if(ajax.status == 200){
+          handle_result(ajax.responseText);
+        }else{
+          alert("an error occurred");
+        }
+      }
+    });
+
+    ajax.open('post','',true);
+    ajax.send(myform);
+
+  }
+
+  function handle_result(result)
+  {
+
+    var contentDiv = document.querySelector("#tabs-content");
+    contentDiv.innerHTML = result;
 
   }
 
   function set_tab(tab_name)
   {
-    tab = tab_name;
-    sessionStorage.setItem("tab", tab_name);
 
     if(dirty)
     {
       //ask user to save when switching tabs
       if(!confirm("Your changes were not saved. continue?!"))
       {
-        tab = dirty;
-        sessionStorage.setItem("tab", dirty);
-
-        setTimeout(function(){
-
-          show_tab(dirty);
-          disable_save_button(true);
-
-        },10);
-
-      }else{
-        dirty = false;
-        disable_save_button(false);
+        return;
       }
+
     }
+
+    tab = tab_name;
+    sessionStorage.setItem("tab", tab_name);
+
+    dirty = false;
+    show_tab(tab_name);
+
   }
 
   function something_changed(e)
@@ -271,7 +311,17 @@
     }
   }
 
+  function show_loader(item)
+  {
+    item.innerHTML = `<img class="loader" src="<?=ROOT?>/adminassets/img/loader.gif">`;
+  }
+
+  function hide_loader()
+  {
+
+  }
+
+  show_tab(tab);
+
 </script>
-
-
 <?php $this->view('admin/admin-footer',$data) ?>
