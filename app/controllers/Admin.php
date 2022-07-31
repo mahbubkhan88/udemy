@@ -29,15 +29,21 @@ class Admin extends Controller
 			redirect('login');
 		}
 
-		$course = new Course();
-		$user_id = Auth::getId();
+		$user_id  = Auth::getId();
+		$course   = new Course();
+		$category = new Category();
+		$language = new Language();
+		$level    = new Level();
+		$currency = new Currency();
+		$price    = new Price();
+		
 		$data = [];
 		$data['action'] = $action;
 		$data['id'] = $id;
 
 		if($action == 'add')
 		{
-			$category = new Category();
+			
 
 			$data['categories'] = $category->findAll('asc');
 
@@ -66,17 +72,34 @@ class Admin extends Controller
 		}
 		elseif ($action == 'edit') {
 
-			//Get course information
-			$data['row'] = $course->first(['user_id'=>$user_id, 'id'=>$id]);
+			$categories = $category->findAll('asc');
+			$languages  = $language->findAll('asc');
+			$levels     = $level->findAll('asc');
+			$currencies = $currency->findAll('asc');
+			$prices     = $price->findAll('asc');
 
-			if($_SERVER['REQUEST_METHOD'] == "POST")
+			//Get course information
+			$data['row'] = $row = $course->first(['user_id'=>$user_id, 'id'=>$id]);
+
+			if($_SERVER['REQUEST_METHOD'] == "POST" && $row)
 			{
 				if(!empty($_POST['data_type']) && $_POST['data_type'] == "read")
 				{
 					if($_POST['tab_name'] == "course-landing-page")
 					{
-						//include "../app/views/course-edit-tabs/course-landing-page.view.php";
-						include views_path("course-edit-tabs/course-landing-page");
+						$info['data'] = file_get_contents(ROOT."/ajax/course_edit/".$user_id."/".$id);
+						$info['data_type'] = "read";
+
+						echo json_encode($info);
+					}
+				}elseif(!empty($_POST['data_type']) && $_POST['data_type'] == "save")
+				{
+					if($_POST['tab_name'] == "course-landing-page")
+					{
+						$info['data'] = "";
+						$info['data_type'] = "save";
+
+						echo json_encode($info);
 					}
 				}
 

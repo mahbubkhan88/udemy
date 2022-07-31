@@ -112,7 +112,7 @@
       <?php if(!empty($row)):?>
 
         <div class="float-end">
-          <button class="js-save-button btn btn-success disabled">Save</button>
+          <button onclick="save_content()" class="js-save-button btn btn-success disabled">Save</button>
           <a href="<?=ROOT?>/admin/courses">
             <button class="btn btn-primary">Back</button>
           </a>
@@ -135,7 +135,7 @@
         <!-- div tabs -->
         <div oninput="something_changed(event)">
           <div id="tabs-content">
-            
+
           </div>
         </div>
         <!-- end div tabs -->
@@ -231,10 +231,10 @@
 
     div.classList.add("active-tab");
 
-    var data = {};
-    data.tab_name = tab;
-    data.data_type = "read";
-    send_data(data);
+    send_data({
+      tab_name: tab,
+      data_type: "read",
+    });
 
     disable_save_button(false);
 
@@ -270,8 +270,24 @@
   function handle_result(result)
   {
 
-    var contentDiv = document.querySelector("#tabs-content");
-    contentDiv.innerHTML = result;
+    console.log(result);
+
+    var obj = JSON.parse(result);
+
+    if(typeof obj == 'object'){
+
+      if(obj.data_type == "read"){
+
+        var contentDiv = document.querySelector("#tabs-content");
+        contentDiv.innerHTML = obj.data;
+
+      }else if(obj.data_type == "save"){
+
+        alert("Data saved successfully");
+
+      }
+
+    }
 
   }
 
@@ -302,6 +318,7 @@
     disable_save_button(true);
   }
 
+  // Disabled save button
   function disable_save_button(status = false)
   {
     if(status){
@@ -311,17 +328,30 @@
     }
   }
 
+  // Loader image show
   function show_loader(item)
   {
     item.innerHTML = `<img class="loader" src="<?=ROOT?>/adminassets/img/loader.gif">`;
   }
 
-  function hide_loader()
-  {
-
-  }
-
   show_tab(tab);
+
+  // Save content
+  function save_content()
+  {
+    var content = document.querySelector("#tabs-content");
+    var inputs  = content.querySelectorAll("inputs,textarea,select");
+
+    var obj       = {};
+    obj.data_type = "save";
+    obj.tab_name  = tab;
+
+    for (var i = 0; i < inputs.length; i++) {
+      var key  = inputs[i].name;
+      obj[key] = inputs[i].value;
+    }
+    send_data(obj);
+  }
 
 </script>
 <?php $this->view('admin/admin-footer',$data) ?>
