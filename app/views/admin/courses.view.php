@@ -267,26 +267,46 @@
 
   }
 
-  function handle_result(result)
-  {
+//handle result
+function handle_result(result)
+{
 
-    console.log(result);
+    //console.log(result);
+    if(result.substr(0,2) == '{"')
+    {
+      var obj = JSON.parse(result);
+      if(typeof obj == 'object'){
 
-    var obj = JSON.parse(result);
+        if(obj.data_type == "save"){
 
-    if(typeof obj == 'object'){
+          alert(obj.data);
 
-      if(obj.data_type == "read"){
+          //clear all errors
+          var error_containers = document.querySelectorAll(".error");
+          for (var i = 0; i < error_containers.length; i++) {
+            error_containers[i].innerHTML = "";
+          }
 
-        var contentDiv = document.querySelector("#tabs-content");
-        contentDiv.innerHTML = obj.data;
+          //show any errors
+          if(typeof obj.errors == 'object')
+          {
+            for(key in obj.errors)
+            {
+              document.querySelector(".error-"+key).innerHTML = obj.errors[key];
+            }
 
-      }else if(obj.data_type == "save"){
-
-        alert("Data saved successfully");
+          }else{
+            disable_save_button(false);
+            dirty = false;
+          }
+        }
 
       }
 
+    }else{
+
+      var contentDiv = document.querySelector("#tabs-content");
+      contentDiv.innerHTML = result;
     }
 
   }
@@ -340,17 +360,109 @@
   function save_content()
   {
     var content = document.querySelector("#tabs-content");
-    var inputs  = content.querySelectorAll("inputs,textarea,select");
+    var inputs = content.querySelectorAll("input,textarea,select");
 
-    var obj       = {};
+    var obj = {};
     obj.data_type = "save";
-    obj.tab_name  = tab;
+    obj.tab_name = tab;
 
     for (var i = 0; i < inputs.length; i++) {
-      var key  = inputs[i].name;
+
+      var key = inputs[i].name;
       obj[key] = inputs[i].value;
+
     }
+
     send_data(obj);
+
+  }
+
+  // Upload course image
+  var course_image_uploading      = false;
+  var ajax_course_image           = null;
+
+  function upload_course_image(file)
+  {
+
+    if(course_image_uploading){
+
+      alert("Please wait while the others image uploads");
+      return;
+    }
+
+    //Validate image extension
+    var allowed_types = ['jpg','jpeg','png'];
+    var ext = file.name.split(".").pop();
+    ext = ext.toLowerCase();
+
+    if(!allowed_types.includes(ext))
+    {
+      alert("Only files of this type allowed: "+allowed_types.toString(","));
+      return;
+    }
+
+    // Display an image upload preview
+    var img = document.querySelector(".js-course-image-upload-preview");
+    var link = URL.createObjectURL(file);
+    img.src = link;
+
+    //Began image uploads
+    course_image_uploading = true;
+
+    document.querySelector(".js-image-upload-info").innerHTML = file.name;
+    document.querySelector(".js-image-upload-info").classList.remove("hide");
+    document.querySelector(".js-image-upload-input").classList.add("hide");
+    document.querySelector(".js-image-upload-cancel-button").classList.remove("hide");
+
+    var myform = new FormData();
+    ajax_course_image = new XMLHttpRequest();
+
+    ajax_course_image.addEventListener('readystatechange',function(){
+
+      if(ajax_course_image.readyState == 4){
+
+        if(ajax_course_image.status == 200){
+          
+          alert(ajax_course_image.responseText);
+        }
+
+          course_image_uploading = false;
+          document.querySelector(".js-image-upload-info").classList.add("hide");
+          document.querySelector(".js-image-upload-input").classList.remove("hide");
+          document.querySelector(".js-image-upload-cancel-button").classList.add("hide");
+      }
+
+    });
+
+    ajax_course_image.addEventListener('error',function(){
+      alert("An error occurred");
+    });
+
+    ajax_course_image.addEventListener('abort',function(){
+      alert("Upload aborted");
+    });
+
+    ajax_course_image.upload.addEventListener('progress',function(e){
+
+
+      var parecnt = Math.round((e.loaded / e.total) * 100);
+      document.querySelector(".progress-bar-image").style.width = parecnt + "%";
+      document.querySelector(".progress-bar-image").innerHTML = parecnt + "%";
+
+    });
+
+    myform.append('data_type','upload_course_image');
+    myform.append('tab_name',tab);
+    myform.append('image',file);
+
+    ajax_course_image.open('post','',true);
+    ajax_course_image.send(myform);
+  }
+
+  //Image cancel button 
+  function ajax_course_image_cancel()
+  {
+    ajax_course_image.abort();
   }
 
 </script>

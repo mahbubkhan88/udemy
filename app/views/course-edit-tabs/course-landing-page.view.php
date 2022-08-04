@@ -2,7 +2,7 @@
 
   <div class="card">
     <div class="card-body">
-      <h5 class="card-title">Edit Course</h5>
+      <h5 class="card-title">Course Landing Page</h5>
 
       <form>
         <div class="row mb-5">
@@ -11,11 +11,13 @@
             <div class="input-group mb-3">
               <span class="input-group-text" id="course-title"><b>Course Title</b></span>
               <input type="text" class="form-control" name="title" value="<?=$row->title?>">
+              <small class="error error-title w-100 text-danger"></small>
             </div>
 
             <div class="input-group mb-3">
               <span class="input-group-text" id="course-subtitle"><b>Course Subtitle</b></span>
               <input type="text" class="form-control" name="subtitle" value="<?=$row->subtitle?>">
+              <small class="error error-subtitle w-100 text-danger"></small>
             </div>
 
             <div class="row mb-3">
@@ -23,19 +25,26 @@
               <div class="col-sm-10">
                 <textarea class="form-control" style="height: 100px" name="description"><?=$row->description?></textarea>
               </div>
+              <small class="error error-description w-100 text-danger"></small>
             </div>
 
             <div class="row mb-3">
               <div class="col-sm-6">
                 <label><b>Language</b></label>
-                <select name="language_id" class="form-select" aria-label="Default select example">
-                  <option selected="">Selece Language</option>
+                <select name="language_id" class="form-select">
+                  <option value="">Select Language</option>
                   <?php if(!empty($languages)):?>
-                    <?php foreach($languages as $lan):?>
-                      <option <?=set_select('category_id',$lan->id, $row->language_id)?> value="<?=$lan->id?>"><?=esc($lan->language)?></option>
-                    <?php endforeach;?>
-                  <?php endif;?>
+                      <?php foreach($languages as $lan):?>
+                        
+                        <?php 
+                          $row->language_id = !$row->language_id ? 1 : $row->language_id; 
+                        ?>
+
+                        <option <?=set_select('language_id',$lan->id,$row->language_id)?> value="<?=$lan->id?>"><?=esc($lan->language)?></option>
+                      <?php endforeach;?>
+                    <?php endif;?>
                 </select>
+                <small class="error error-language_id w-100 text-danger"></small>
               </div>
 
               <div class="col-sm-6">
@@ -44,24 +53,26 @@
                   <option selected="">Selece Level</option>
                   <?php if(!empty($levels)):?>
                     <?php foreach($levels as $level):?>
-                      <option <?=set_select('category_id',$level->id, $row->level_id)?> value="<?=$level->id?>"><?=esc($level->level)?></option>
+                      <option <?=set_select('level_id',$level->id, $row->level_id)?> value="<?=$level->id?>"><?=esc($level->level)?></option>
                     <?php endforeach;?>
                   <?php endif;?>
                 </select>
+                <small class="error error-level_id w-100 text-danger"></small>
               </div>
             </div>
 
             <div class="row mb-3">
               <div class="col-sm-6">
                 <label><b>Category</b></label>
-                <select name="category_id " class="form-select" aria-label="Default select example">
-                  <option selected="">Selece Category</option>
+                <select name="category_id" class="form-select">
+                  <option value="">Select Category</option>
                   <?php if(!empty($categories)):?>
-                    <?php foreach($categories as $cat):?>
-                      <option <?=set_select('category_id',$cat->id, $row->category_id)?> value="<?=$cat->id?>"><?=esc($cat->category)?></option>
-                    <?php endforeach;?>
-                  <?php endif;?>
+                      <?php foreach($categories as $cat):?>
+                        <option <?=set_select('category_id',$cat->id,$row->category_id)?> value="<?=$cat->id?>"><?=esc($cat->category)?></option>
+                      <?php endforeach;?>
+                    <?php endif;?>
                 </select>
+                <small class="error error-category_id w-100 text-danger"></small>
               </div>
 
               <div class="col-sm-6">
@@ -72,6 +83,7 @@
                   <option value="2">Photoshop</option>
                   <option value="3">Blender</option>
                 </select>
+                <small class="error error-description w-100 text-danger"></small>
               </div>
             </div>
 
@@ -82,10 +94,11 @@
                   <option selected="">Selece Currency</option>
                   <?php if(!empty($currencies)):?>
                     <?php foreach($currencies as $currency):?>
-                      <option <?=set_select('category_id',$currency->id, $row->currency_id)?> value="<?=$currency->id?>"><?=esc($currency->currency)?></option>
+                      <option <?=set_select('currency_id',$currency->id, $row->currency_id)?> value="<?=$currency->id?>"><?=esc($currency->currency)?></option>
                     <?php endforeach;?>
                   <?php endif;?>
                 </select>
+                <small class="error error-currency_id w-100 text-danger"></small>
               </div>
 
               <div class="col-sm-6">
@@ -94,21 +107,23 @@
                   <option selected="">Selece Pricing</option>
                   <?php if(!empty($prices)):?>
                     <?php foreach($prices as $price):?>
-                      <option <?=set_select('category_id',$price->id, $row->price_id)?> value="<?=$price->id?>"><?=esc($price->price)?></option>
+                      <option <?=set_select('price_id',$price->id, $row->price_id)?> value="<?=$price->id?>"><?=esc($price->price)?></option>
                     <?php endforeach;?>
                   <?php endif;?>
                 </select>
+                <small class="error error-price_id w-100 text-danger"></small>
               </div>
             </div>
 
             <div class="input-group mb-3">
               <span class="input-group-text" id="primary-subject">Primary Subject</span>
               <input type="text" class="form-control" name="primary_subject" value="<?=$row->primary_subject?>">
+              <small class="error error-primary-subject w-100 text-danger"></small>
             </div>
 
             <div class="my-4 row">
               <div class="col-sm-4">
-                <img src="<?=ROOT?>/adminassets/img/no-image.jpg" style="width: 100%;">
+                <img class="js-course-image-upload-preview" src="<?=get_image($row->course_image)?>" style="width: 100%;">
               </div>
 
               <div class="col-sm-8">
@@ -116,27 +131,30 @@
                 Upload your course image here. It must meet our course image quality standards to be accepted. Important guidelines: 750x422 pixels; .jpg, .jpeg,. gif, or .png. no text on the image.
 
                 <br><br>
-                <input class="form-control" type="file" id="formFile" name="course_image">
+                <input onchange="upload_course_image(this.files[0])" class="js-image-upload-input form-control" type="file" id="formFile" name="course_image">
                 <div class="progress my-4">
-                  <div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                  <div class="progress-bar progress-bar-image" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">20%</div>
                 </div>
+                <div class="js-image-upload-info hide"></div>
+                <button type="button" onclick="ajax_course_image_cancel()" class="js-image-upload-cancel-button btn btn-warning btn-sm hide">Cancel Upload</button>
               </div>
             </div>
 
             <div class="my-4 row">
               <div class="col-sm-4">
-                <img src="<?=ROOT?>/adminassets/img/no-image.jpg" style="width: 100%;">
+                <img src="<?=get_image('')?>" style="width: 100%;">
               </div>
               <div class="col-sm-8">
                 <div  class="h5"><b>Course Video</b></div>
                 Students who watch a well-made promo video are 5X more likely to enroll in your course. We've seen that statistic go up to 10X for exceptionally awesome videos. Learn how to make yours awesome!
 
                 <br><br>
-                <input class="form-control" type="file" id="formFile" name="course_promo_video">
+                <input class="js-video-upload-input form-control" type="file" id="formFile" name="course_promo_video">
                 <div class="progress my-4">
-                  <div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                  <div class="progress-bar progress-bar-video" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
                 </div>
-
+                <div class="js-video-upload-info hide"></div>
+                <button type="button" class="js-video-upload-cancel-button btn btn-warning btn-sm hide">Cancel Upload</button>
               </div>
             </div>
 

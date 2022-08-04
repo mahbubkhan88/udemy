@@ -87,28 +87,83 @@ class Admin extends Controller
 				{
 					if($_POST['tab_name'] == "course-landing-page")
 					{
-						$info['data'] = file_get_contents(ROOT."/ajax/course_edit/".$user_id."/".$id);
-						$info['data_type'] = "read";
 
-						echo json_encode($info);
-					}
-				}elseif(!empty($_POST['data_type']) && $_POST['data_type'] == "save")
-				{
-					if($_POST['tab_name'] == "course-landing-page")
+						include views_path('course-edit-tabs/course-landing-page');
+
+					}else
+					if($_POST['tab_name'] == "course-messages")
 					{
-						$info['data'] = "";
+
+						include views_path('course-edit-tabs/course-messages');
+
+					}
+
+				}else
+				if(!empty($_POST['data_type']) && $_POST['data_type'] == "save")
+				{
+					
+					if($course->edit_validate($_POST, $id, $_POST['tab_name'])){
+						
+						//Check if a temp image exixts
+						if($row->course_image_tmp != "" && file_exists($row->course_image_tmp))
+						{
+							//delete current course image
+							if(file_exists($row->course_image))
+							{
+								unlink($row->course_image);
+							}
+
+							$_POST['course_image']     = $row->course_image_tmp;
+							$_POST['course_image_tmp'] = "";
+						}
+
+						$course->update($id,$_POST);
+						
+						$info['data'] = "Course saved successfully";
 						$info['data_type'] = "save";
 
-						echo json_encode($info);
+					}else{
+
+						$info['errors'] = $course->errors;
+						$info['data'] = "Please fix the errors";
+						$info['data_type'] = "save";
+
 					}
-				}
+					
+					echo json_encode($info);
+
+				}else
+				if(!empty($_POST['data_type']) && $_POST['data_type'] == "upload_course_image")
+				{
+
+					$folder = "uploads/courses/";
+					if(!file_exists($folder))
+					{
+						mkdir($folder,0777,true);
+					}
+
+					$errors =[];
+					if(!empty($_FILES['image']['name']))
+					{
+						$destination = $folder . time() . $_FILES['image']['name'];
+						move_uploaded_file($_FILES['image']['tmp_name'], $destination);
+
+						//delete old tmp file
+						if(file_exists($row->course_image_tmp))
+						{
+							unlink($row->course_image_tmp);
+						}
+
+						$course->update($id,['course_image_tmp'=>$destination]);
+					}
+				}			
 
 				die;
 			}
-			
+
 		} else {
 
-			//Course view
+		//Course view
 			$data['rows'] = $course->where(['user_id'=>$user_id]);
 		}
 

@@ -30,6 +30,17 @@ function set_value($key, $default = '')
 	return '';
 }
 
+function get_image($file)
+{
+
+	if(file_exists($file))
+	{
+		return ROOT . "/". $file;
+	}
+
+	return ROOT."/adminassets/img/no-image.jpg";
+}
+
 function set_select($key, $value, $default = '')
 {
 
