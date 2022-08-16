@@ -22,8 +22,9 @@ class App
 			require "../app/controllers/".$this->controller.".php";
 		}
 
-		$mycontroller = new $this->controller();
+		$mycontroller = new ("Controller\\".$this->controller)();
 		$mymethod = $arr[1] ?? $this->method;
+		//$mymethod = str_replace("-", "_", $mymethod);
 
 		if(!empty($arr[1]))
 		{

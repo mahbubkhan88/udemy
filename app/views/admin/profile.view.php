@@ -7,7 +7,7 @@
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-          <li class="breadcrumb-item">Users</li>
+          <li class="breadcrumb-item">Admin</li>
           <li class="breadcrumb-item active">Profile</li>
           <li class="breadcrumb-item active"><?=esc($row->firstname)?> <?=esc($row->lastname)?></li>
         </ol>
@@ -508,9 +508,7 @@
   function display_errors(errors){
 
     for(key in errors){
-
-      console.log(".js-error-"+key);
-      document.querySelector(".js-error-firstname").innerHTML = errors[key];
+      document.querySelector(".js-error-"+key).innerHTML = errors[key];
     }
   }
 

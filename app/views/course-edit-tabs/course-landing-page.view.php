@@ -1,5 +1,7 @@
 <div class="col-lg-9 mx-auto">
 
+  <?php csrf() ?>
+
   <div class="card">
     <div class="card-body">
       <h5 class="card-title">Course Landing Page</h5>
@@ -141,20 +143,26 @@
             </div>
 
             <div class="my-4 row">
+              
               <div class="col-sm-4">
-                <img src="<?=get_image('')?>" style="width: 100%;">
+                
+                <video controls class="js-course-video-upload-preview" style="width: 100%;">
+                  <source src="$row->course_promo_video" type="video/mp4">
+                </video>
+
               </div>
+
               <div class="col-sm-8">
                 <div  class="h5"><b>Course Video</b></div>
                 Students who watch a well-made promo video are 5X more likely to enroll in your course. We've seen that statistic go up to 10X for exceptionally awesome videos. Learn how to make yours awesome!
 
                 <br><br>
-                <input class="js-video-upload-input form-control" type="file" id="formFile" name="course_promo_video">
+                <input onchange="upload_course_video(this.files[0])" class="js-video-upload-input form-control" type="file" id="formFile" name="course_promo_video">
                 <div class="progress my-4">
-                  <div class="progress-bar progress-bar-video" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                  <div class="progress-bar progress-bar-video" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
                 </div>
                 <div class="js-video-upload-info hide"></div>
-                <button type="button" class="js-video-upload-cancel-button btn btn-warning btn-sm hide">Cancel Upload</button>
+                <button type="button" onclick="ajax_course_video_cancel()" class="js-video-upload-cancel-button btn btn-warning btn-sm hide">Cancel Upload</button>
               </div>
             </div>
 

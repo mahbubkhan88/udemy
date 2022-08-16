@@ -1,8 +1,11 @@
-<?php 
+<?php
+
+namespace Controller;
 
 /**
  * main controller class
  */
+
 class Controller
 {
 	

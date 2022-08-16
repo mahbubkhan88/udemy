@@ -1,4 +1,6 @@
-
+<?php
+  use \Model\Auth;
+?>
 
 <!-- ======= Header ======= -->
 <header id="header" class="header d-flex align-items-center fixed-top">
@@ -35,7 +37,6 @@
 
         <li><a href="<?=ROOT?>/about">About</a></li>
         <li><a href="<?=ROOT?>/contact">Contact</a></li>
-
 
 
         <?php if(!Auth::logged_in()):?>

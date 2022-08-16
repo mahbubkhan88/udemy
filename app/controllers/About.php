@@ -1,4 +1,6 @@
-<?php 
+<?php
+
+namespace Controller;
 
 /**
  * about class

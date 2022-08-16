@@ -1,3 +1,7 @@
+<?php
+  use \Model\Auth;
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -315,6 +319,13 @@
           <span>Profile</span>
         </a>
       </li><!-- End Dashboard Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link " href="<?=ROOT?>/admin/slider">
+          <i class="bi bi-images"></i>
+          <span>Slider</span>
+        </a>
+      </li><!-- End Slider Nav -->
 
       <li class="nav-heading">Go to</li>
 

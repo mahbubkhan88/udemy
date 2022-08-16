@@ -1,4 +1,7 @@
 <?php
+
+namespace Model;
+
 if(!defined("ROOT")) die ("direct script access denied");
 
 

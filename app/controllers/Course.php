@@ -1,21 +1,22 @@
-<?php
+<?php 
 
 namespace Controller;
 
 if(!defined("ROOT")) die ("direct script access denied");
 
 /**
- * home class
+ * course class
  */
 
-class Home extends Controller
+
+class Course extends Controller
 {
 	
 	public function index()
 	{
 
 		$course = new \Model\Course();
-		$data['title'] = "Home";
+		$data['title'] = "Course";
 
 		//Read all courses 
 		$data['rows'] = $course->where(['approved'=>0],'desc',7);
@@ -37,7 +38,7 @@ class Home extends Controller
 
 		}
 
-		$this->view('home',$data);
+		$this->view('course',$data);
 	}
 	
 }

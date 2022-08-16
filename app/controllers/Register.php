@@ -1,8 +1,12 @@
-<?php 
+<?php
+
+namespace Controller;
 
 /**
  * register class
  */
+
+
 class Register extends Controller
 {
 	
@@ -11,7 +15,7 @@ class Register extends Controller
 
 		$data['errors'] = [];
 
-		$user = new User();
+		$user = new \Model\User();
 
 		if($_SERVER['REQUEST_METHOD'] == "POST")
 		{

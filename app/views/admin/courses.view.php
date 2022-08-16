@@ -165,6 +165,7 @@
           <tr>
             <th scope="col">#</th>
             <th scope="col">Title</th>
+            <th scope="col">image</th>
             <th scope="col">Instructor</th>
             <th scope="col">Category</th>
             <th scope="col">Price</th>
@@ -181,6 +182,7 @@
               <tr>
                 <th scope="row"><?=$row->id?></th>
                 <td><?=esc($row->title)?></td>
+                <td><img src="<?=get_image($row->course_image)?>" style="width: 120px; height: 80px; object-fit: cover;"></td>
                 <td><?=esc($row->user_row->name ?? 'Unknown')?></td>
                 <td><?=esc($row->category_row->category ?? 'Unknown')?></td>
                 <td><?=esc($row->price_row->name ?? 'Unknown')?></td>
@@ -377,7 +379,7 @@ function handle_result(result)
 
   }
 
-  // Upload course image
+  // upload course image
   var course_image_uploading      = false;
   var ajax_course_image           = null;
 
@@ -390,7 +392,7 @@ function handle_result(result)
       return;
     }
 
-    //Validate image extension
+    //validate image extension
     var allowed_types = ['jpg','jpeg','png'];
     var ext = file.name.split(".").pop();
     ext = ext.toLowerCase();
@@ -401,12 +403,12 @@ function handle_result(result)
       return;
     }
 
-    // Display an image upload preview
+    // display an image upload preview
     var img = document.querySelector(".js-course-image-upload-preview");
     var link = URL.createObjectURL(file);
     img.src = link;
 
-    //Began image uploads
+    //began image uploads
     course_image_uploading = true;
 
     document.querySelector(".js-image-upload-info").innerHTML = file.name;
@@ -423,7 +425,9 @@ function handle_result(result)
 
         if(ajax_course_image.status == 200){
           
-          alert(ajax_course_image.responseText);
+          //everything went well
+          //alert("Upload completed");
+          //alert(ajax_course_image.responseText);
         }
 
           course_image_uploading = false;
@@ -454,16 +458,111 @@ function handle_result(result)
     myform.append('data_type','upload_course_image');
     myform.append('tab_name',tab);
     myform.append('image',file);
+    myform.append('csrf_code',document.querySelector(".js-csrf_code").value);
 
     ajax_course_image.open('post','',true);
     ajax_course_image.send(myform);
   }
 
-  //Image cancel button 
+  //image cancel button 
   function ajax_course_image_cancel()
   {
     ajax_course_image.abort();
   }
 
+
+
+  // upload course video
+  var course_video_uploading      = false;
+  var ajax_course_video           = null;
+
+  function upload_course_video(file)
+  {
+
+    if(course_video_uploading){
+
+      alert("Please wait while the others video uploads");
+      return;
+    }
+
+    //validate video extension
+    var allowed_types = ['mp4'];
+    var ext = file.name.split(".").pop();
+    ext = ext.toLowerCase();
+
+    if(!allowed_types.includes(ext))
+    {
+      alert("Only files of this type allowed: "+allowed_types.toString(","));
+      return;
+    }
+
+    // display an video upload preview
+    var vdo = document.querySelector(".js-course-video-upload-preview");
+    var link = URL.createObjectURL(file);
+    vdo.src = link;
+
+    //began video uploads
+    course_video_uploading = true;
+
+    document.querySelector(".js-video-upload-info").innerHTML = file.name;
+    document.querySelector(".js-video-upload-info").classList.remove("hide");
+    document.querySelector(".js-video-upload-input").classList.add("hide");
+    document.querySelector(".js-video-upload-cancel-button").classList.remove("hide");
+
+    var myform = new FormData();
+    ajax_course_video = new XMLHttpRequest();
+
+    ajax_course_video.addEventListener('readystatechange',function(){
+
+      if(ajax_course_video.readyState == 4){
+
+        if(ajax_course_video.status == 200){
+          
+          //everything went well
+          //alert("Upload completed");
+          //alert(ajax_course_video.responseText);
+        }
+
+          course_video_uploading = false;
+          document.querySelector(".js-video-upload-info").classList.add("hide");
+          document.querySelector(".js-video-upload-input").classList.remove("hide");
+          document.querySelector(".js-video-upload-cancel-button").classList.add("hide");
+      }
+
+    });
+
+    ajax_course_video.addEventListener('error',function(){
+      alert("An error occurred");
+    });
+
+    ajax_course_video.addEventListener('abort',function(){
+      alert("Upload aborted");
+    });
+
+    ajax_course_video.upload.addEventListener('progress',function(e){
+
+
+      var parecnt = Math.round((e.loaded / e.total) * 100);
+      document.querySelector(".progress-bar-video").style.width = parecnt + "%";
+      document.querySelector(".progress-bar-video").innerHTML = parecnt + "%";
+
+    });
+
+    myform.append('data_type','upload_course_video');
+    myform.append('tab_name',tab);
+    myform.append('video',file);
+    myform.append('csrf_code',document.querySelector(".js-csrf_code").value);
+
+    ajax_course_video.open('post','',true);
+    ajax_course_video.send(myform);
+  }
+
+  //video cancel button 
+  function ajax_course_video_cancel()
+  {
+    ajax_course_video.abort();
+  }
+
 </script>
+
 <?php $this->view('admin/admin-footer',$data) ?>

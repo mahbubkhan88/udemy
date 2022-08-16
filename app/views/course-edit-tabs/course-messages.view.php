@@ -1,5 +1,7 @@
 <div class="col-lg-9 mx-auto">
 
+  <?php csrf() ?>
+
   <div class="card">
     <div class="card-body">
       <h5 class="card-title">Course Messages</h5>

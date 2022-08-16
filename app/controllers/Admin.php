@@ -1,8 +1,14 @@
-<?php 
+<?php
+
+namespace Controller;
 
 /**
  * admin class
  */
+
+use \Model\Auth;
+use \Model\Slider;
+
 class Admin extends Controller
 {
 	
@@ -30,12 +36,12 @@ class Admin extends Controller
 		}
 
 		$user_id  = Auth::getId();
-		$course   = new Course();
-		$category = new Category();
-		$language = new Language();
-		$level    = new Level();
-		$currency = new Currency();
-		$price    = new Price();
+		$course   = new \Model\Course();
+		$category = new \Model\Category();
+		$language = new \Model\Language();
+		$level    = new \Model\Level();
+		$currency = new \Model\Currency();
+		$price    = new \Model\Price();
 		
 		$data = [];
 		$data['action'] = $action;
@@ -83,6 +89,7 @@ class Admin extends Controller
 
 			if($_SERVER['REQUEST_METHOD'] == "POST" && $row)
 			{
+
 				if(!empty($_POST['data_type']) && $_POST['data_type'] == "read")
 				{
 					if($_POST['tab_name'] == "course-landing-page")
@@ -101,35 +108,45 @@ class Admin extends Controller
 				}else
 				if(!empty($_POST['data_type']) && $_POST['data_type'] == "save")
 				{
-					
-					if($course->edit_validate($_POST, $id, $_POST['tab_name'])){
-						
-						//Check if a temp image exixts
-						if($row->course_image_tmp != "" && file_exists($row->course_image_tmp))
-						{
-							//delete current course image
-							if(file_exists($row->course_image))
+					//check if form is valid
+					if($_SESSION['csrf_code'] == $_POST['csrf_code']){
+
+						if($course->edit_validate($_POST,$id,$_POST['tab_name'])){
+
+							//check if a temp image exists
+							if($row->course_image_tmp != "" && file_exists($row->course_image_tmp) && $row->csrf_code == $_POST['csrf_code'])
 							{
-								unlink($row->course_image);
+								//delete currect course image
+								if(file_exists($row->course_image))
+								{
+									unlink($row->course_image);
+								}
+
+								$_POST['course_image'] = $row->course_image_tmp;
+								$_POST['course_image_tmp'] = "";
 							}
 
-							$_POST['course_image']     = $row->course_image_tmp;
-							$_POST['course_image_tmp'] = "";
-						}
+							$course->update($id,$_POST);
 
-						$course->update($id,$_POST);
-						
-						$info['data'] = "Course saved successfully";
-						$info['data_type'] = "save";
+							$info['data'] = "Course saved successfully";
+							$info['data_type'] = "save";
+
+						}else{
+
+							$info['errors'] = $course->errors;
+							$info['data'] = "Please fix the errors";
+							$info['data_type'] = "save";
+
+						}
 
 					}else{
 
-						$info['errors'] = $course->errors;
-						$info['data'] = "Please fix the errors";
-						$info['data_type'] = "save";
+						$info['errors'] = ['key'=>'value'];
+						$info['data'] = "This form is not valid";
+						$info['data_type'] = $_POST['data_type'];
 
 					}
-					
+
 					echo json_encode($info);
 
 				}else
@@ -154,7 +171,7 @@ class Admin extends Controller
 							unlink($row->course_image_tmp);
 						}
 
-						$course->update($id,['course_image_tmp'=>$destination]);
+						$course->update($id,['course_image_tmp'=>$destination, 'csrf_code'=>$_POST['csrf_code']]);
 					}
 				}			
 
@@ -163,7 +180,7 @@ class Admin extends Controller
 
 		} else {
 
-		//Course view
+			//Course view
 			$data['rows'] = $course->where(['user_id'=>$user_id]);
 		}
 
@@ -182,7 +199,7 @@ class Admin extends Controller
 
 		$id = $id ?? Auth::getId();
 
-		$user = new User();
+		$user = new \Model\User();
 		$data['row'] = $row = $user->first(['id'=>$id]);
 
 		if($_SERVER['REQUEST_METHOD'] == "POST" && $row)
@@ -248,6 +265,85 @@ class Admin extends Controller
 		$data['errors'] = $user->errors;
 
 		$this->view('admin/profile',$data);
+	}
+
+	public function slider($id = null)
+	{
+
+		if(!Auth::logged_in())
+		{
+			message('please login to view the admin section');
+			redirect('login');
+		}
+
+		$id = $id ?? Auth::getId();
+
+		$slider = new Slider();
+		$data['rows'] = $rows = $slider->where(['disabled'=>0]);
+
+		if($_SERVER['REQUEST_METHOD'] == "POST" && $rows)
+		{
+
+			$folder = "uploads/images/";
+			if(!file_exists($folder))
+			{
+				mkdir($folder,0777,true);
+				file_put_contents($folder."index.php", "<?php //silence");
+				file_put_contents("uploads/index.php", "<?php //silence");
+			}
+
+			if($slider->edit_validate($_POST,$id))
+			{
+
+				$allowed = ['image/jpeg','image/png'];
+
+				if(!empty($_FILES['image']['name'])){
+
+					if($_FILES['image']['error'] == 0){
+
+						if(in_array($_FILES['image']['type'], $allowed))
+						{
+							//everything good
+							$destination = $folder.time().$_FILES['image']['name'];
+							move_uploaded_file($_FILES['image']['tmp_name'], $destination);
+
+							resize_image($destination);
+							$_POST['image'] = $destination;
+							if(file_exists($row->image))
+							{
+								unlink($row->image);
+							}
+
+						}else{
+							$slider->errors['image'] = "This file type is not allowed";
+						}
+					}else{
+						$slider->errors['image'] = "Could not upload image";
+					}
+				}
+
+				$slider->update($id,$_POST);
+
+				//message("Profile saved successfully");
+				//redirect('admin/profile/'.$id);
+			}
+
+			if(empty($slider->errors)){
+				$arr['message'] = "Profile saved successfully";
+			}else{
+				$arr['message'] = "Please correct these errors";
+				$arr['errors'] = $slider->errors;
+			}
+
+			echo json_encode($arr);
+
+			die;
+		}
+
+		$data['title'] = "Slider";
+		$data['errors'] = $slider->errors;
+
+		$this->view('admin/slider',$data);
 	}
 
 }

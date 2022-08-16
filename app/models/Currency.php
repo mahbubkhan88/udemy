@@ -1,4 +1,6 @@
-<?php 
+<?php
+
+namespace Model;
 
 /**
 * currencies model

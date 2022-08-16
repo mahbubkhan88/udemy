@@ -1,4 +1,6 @@
-<?php 
+<?php
+
+namespace Model;
 
 /**
  * course model
@@ -36,6 +38,9 @@ class Course extends Model
 		'price_id',
 		'currency_id',
 		'promo_link',
+		'csrf_code',
+		'views',
+		'trending',
 		'welcome_message',
 		'congratulations_message',
 		'primary_subject',
@@ -176,7 +181,7 @@ class Course extends Model
 	protected function get_user($rows)
 	{
 
-		$db = new Database();
+		$db = new \Database();
 
 		if(!empty($rows['0']->user_id))
 		{
@@ -200,7 +205,7 @@ class Course extends Model
 	protected function get_category($rows)
 	{
 
-		$db = new Database();
+		$db = new \Database();
 		if(!empty($rows['0']->category_id))
 		{
 			foreach ($rows as $key => $row) {
@@ -236,7 +241,7 @@ class Course extends Model
 
 	protected function get_price($rows){
 
-		$db = new Database();
+		$db = new \Database();
 		if(!empty($rows[0]->price_id))
 		{
 			foreach ($rows as $key => $row) {

@@ -1,8 +1,14 @@
-<?php 
+<?php
+
+namespace Controller;
 
 /**
  * login class
  */
+
+use Model\Auth;
+use Model\User;
+
 class Login extends Controller
 {
 	
